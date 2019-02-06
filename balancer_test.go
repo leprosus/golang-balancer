@@ -99,8 +99,9 @@ func TestErrChan(t *testing.T) {
 
 func TestCountPerSecond(t *testing.T) {
 	b := getInstance()
+	b.SetCountPerSecond(11)
 
-	if b.CountPerSecond() != 10 {
+	if b.CountPerSecond() != 11 {
 		t.Fatal("Can't get expected count per second value")
 	}
 }
