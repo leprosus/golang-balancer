@@ -21,13 +21,12 @@ type Balancer struct {
 
 func NewBalancer(jobCh chan interface{}, handler func(job interface{}) (err error), errCh chan error, countPerSecond int32) (b *Balancer) {
 	b = &Balancer{
-		handler:        handler,
-		countPerSecond: countPerSecond,
-		max:            2 * countPerSecond,
-		min:            0,
-
-		err: errCh,
+		handler: handler,
+		err:     errCh,
 	}
+
+	b.SetMax(2 * countPerSecond)
+	b.SetCountPerSecond(countPerSecond)
 
 	var counter, efficiency int32
 	ticker := time.NewTicker(time.Second)
