@@ -73,8 +73,8 @@ func NewBalancer(jobCh chan interface{}, handler func(job interface{}) (err erro
 	return
 }
 
-func (b *Balancer) Max(max int32) (ok bool) {
-	if 2*atomic.LoadInt32(&b.countPerSecond) < max {
+func (b *Balancer) SetMax(max int32) (ok bool) {
+	if max < atomic.LoadInt32(&b.countPerSecond) {
 		return
 	}
 
@@ -83,8 +83,8 @@ func (b *Balancer) Max(max int32) (ok bool) {
 	return true
 }
 
-func (b *Balancer) Min(min int32) (ok bool) {
-	if 2*atomic.LoadInt32(&b.countPerSecond) < 0 {
+func (b *Balancer) SetMin(min int32) (ok bool) {
+	if min > atomic.LoadInt32(&b.countPerSecond) {
 		return
 	}
 
@@ -109,6 +109,16 @@ func (b *Balancer) Decrease() (ok bool) {
 	}
 
 	atomic.AddInt32(&b.countPerSecond, -1)
+
+	return true
+}
+
+func (b *Balancer) SetCountPerSecond(countPerSecond int32) (ok bool) {
+	if countPerSecond > atomic.LoadInt32(&b.max) || countPerSecond < atomic.LoadInt32(&b.min) {
+		return
+	}
+
+	atomic.StoreInt32(&b.countPerSecond, countPerSecond)
 
 	return true
 }

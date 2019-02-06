@@ -55,7 +55,7 @@ func TestDecrease(t *testing.T) {
 func TestIncreaseWithLimitation(t *testing.T) {
 	b := getInstance()
 
-	b.Max(11)
+	b.SetMax(11)
 	b.Increase()
 	b.Increase()
 
@@ -67,7 +67,7 @@ func TestIncreaseWithLimitation(t *testing.T) {
 func TestDecreaseWithLimitation(t *testing.T) {
 	b := getInstance()
 
-	b.Min(9)
+	b.SetMin(9)
 	b.Decrease()
 	b.Decrease()
 
