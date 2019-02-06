@@ -36,7 +36,7 @@ func main() {
 
 ## List of all methods
 
-* golang_balancer.NewBalancer(jobCh, handler, errCh, countPerSecond) - Creates new balancer with jobs channel, function to handle new job, errors channel and number executing goroutines per second 
+* golang_balancer.NewBalancer(jobCh, handler, errCh, countPerSecond) - Creates new balancer with jobs channel, function to handle new job, errors channel and number of executing goroutines per second 
 * golang_balancer.SetMax(number) - Sets maximum of goroutines 
 * golang_balancer.SetMin(number) - Set minimum of goroutine
 * golang_balancer.Increase() - Increases number of goroutine
