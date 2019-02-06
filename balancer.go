@@ -19,14 +19,14 @@ type Balancer struct {
 	wg sync.WaitGroup
 }
 
-func NewBalancer(jobCh chan interface{}, handler func(job interface{}) (err error), errChan chan error, countPerSecond int32) (b *Balancer) {
+func NewBalancer(jobCh chan interface{}, handler func(job interface{}) (err error), errCh chan error, countPerSecond int32) (b *Balancer) {
 	b = &Balancer{
 		handler:        handler,
 		countPerSecond: countPerSecond,
 		max:            2 * countPerSecond,
 		min:            0,
 
-		err: errChan,
+		err: errCh,
 	}
 
 	var counter, efficiency int32
