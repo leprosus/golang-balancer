@@ -1,6 +1,7 @@
 package golang_balancer
 
 import (
+	"math"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -19,13 +20,13 @@ type Balancer struct {
 	wg sync.WaitGroup
 }
 
-func NewBalancer(jobCh chan interface{}, handler func(job interface{}) (err error), errCh chan error, countPerSecond int32) (b *Balancer) {
+func NewBalancer(jobCh chan interface{}, handler func(job interface{}) (err error), errCh chan error, countPerSecond uint32) (b *Balancer) {
 	b = &Balancer{
 		handler: handler,
 		err:     errCh,
 	}
 
-	b.SetMax(2 * countPerSecond)
+	b.SetMax(2 * int32(countPerSecond))
 	b.SetCountPerSecond(countPerSecond)
 
 	var counter, efficiency int32
@@ -73,7 +74,7 @@ func NewBalancer(jobCh chan interface{}, handler func(job interface{}) (err erro
 }
 
 func (b *Balancer) SetMax(max int32) (ok bool) {
-	if max < atomic.LoadInt32(&b.countPerSecond) {
+	if max < math.MaxInt32 && max < atomic.LoadInt32(&b.countPerSecond) {
 		return
 	}
 
@@ -83,7 +84,7 @@ func (b *Balancer) SetMax(max int32) (ok bool) {
 }
 
 func (b *Balancer) SetMin(min int32) (ok bool) {
-	if min > atomic.LoadInt32(&b.countPerSecond) {
+	if min > 0 && min > atomic.LoadInt32(&b.countPerSecond) {
 		return
 	}
 
@@ -112,12 +113,12 @@ func (b *Balancer) Decrease() (ok bool) {
 	return true
 }
 
-func (b *Balancer) SetCountPerSecond(countPerSecond int32) (ok bool) {
-	if countPerSecond > atomic.LoadInt32(&b.max) || countPerSecond < atomic.LoadInt32(&b.min) {
+func (b *Balancer) SetCountPerSecond(countPerSecond uint32) (ok bool) {
+	if int32(countPerSecond) > atomic.LoadInt32(&b.max) || int32(countPerSecond) < atomic.LoadInt32(&b.min) {
 		return
 	}
 
-	atomic.StoreInt32(&b.countPerSecond, countPerSecond)
+	atomic.StoreInt32(&b.countPerSecond, int32(countPerSecond))
 
 	return true
 }
